@@ -54,6 +54,17 @@ class mwp {
             return $result;
         }
 
+        // E-Academy (AOSML fork): accept MuTMS multi-tenancy (tool_mutenancy)
+        // as the MWP core equivalent, so the Boost Union branding extension
+        // (local_boost_union_mwp) works on our Moodle + MuTMS stack.
+        // NOTE: in Moodle 5.x $CFG->dirroot already resolves to the public/
+        // webroot at runtime, so all paths stay dirroot-relative.
+        if (file_exists($CFG->dirroot . '/admin/tool/mutenancy/version.php')) {
+            // Inform the caller.
+            $result = true;
+            return $result;
+        }
+
         // Otherwise, we are not on MWP.
         // Inform the caller.
         $result = false;
