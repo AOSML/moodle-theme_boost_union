@@ -317,18 +317,18 @@ function theme_boost_union_get_main_scss_content($theme) {
     // Initialize SCSS code.
     $scss = '';
 
-    // If we are on MWP.
-    if (\theme_boost_union\local\mwp::extension_present() == true) {
-        // Call the MWP function only if the function exists.
-        if (function_exists('theme_workplace_get_main_scss_content')) {
-            // Get and include the main SCSS from Theme Workplace.
-            $scss .= theme_workplace_get_main_scss_content(\core\output\theme_config::load('workplace'));
-        }
+    // If we are on MWP and Theme Workplace is available.
+    if (\theme_boost_union\local\mwp::extension_present() == true
+            && function_exists('theme_workplace_get_main_scss_content')) {
+        // Get and include the main SCSS from Theme Workplace.
+        $scss .= theme_workplace_get_main_scss_content(\core\output\theme_config::load('workplace'));
 
-        // Otherwise.
+        // Otherwise (not MWP, or MWP without Theme Workplace — our MuTMS stack).
     } else {
         // Get and include the main SCSS from Boost Core.
         // This particularly covers the theme preset which is set in Boost Core and not Boost Union.
+        // AOSML fork: when the MWP extension is present but Theme Workplace is NOT installed,
+        // we must fall back to Boost Core, otherwise the site would lose its base SCSS entirely.
         $scss .= theme_boost_get_main_scss_content(\core\output\theme_config::load('boost'));
     }
 
