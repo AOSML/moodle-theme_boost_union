@@ -572,14 +572,13 @@ Feature: Configuring the theme_boost_union plugin on the "Flavours" page, applyi
     When I log in as "admin"
     And I am on "Course 1" course homepage
     Then the "class" attribute of ".navbar" "css_element" should contain "<classes>"
-    And the "data-bs-theme" attribute of ".navbar" "css_element" should <databstheme>
 
     Examples:
-      | setting      | classes    | databstheme     |
-      | light        | bg-body    | not be set      |
-      | dark         | bg-dark    | contain "dark"  |
-      | coloredlight | bg-primary | contain "light" |
-      | coloreddark  | bg-primary | contain "dark"  |
+      | setting      | classes                |
+      | light        | bg-body                |
+      | dark         | navbar-dark bg-dark    |
+      | coloredlight | bg-primary             |
+      | coloreddark  | navbar-dark bg-primary |
 
   Scenario Outline: Setting: Navbar color - Set the navbar color (with the global setting being overridden)
     Given the following config values are set as admin:
@@ -592,12 +591,11 @@ Feature: Configuring the theme_boost_union plugin on the "Flavours" page, applyi
     And I am on "Course 1" course homepage
     Then the "class" attribute of ".navbar" "css_element" should contain "<classes>"
     And the "class" attribute of ".navbar" "css_element" should not contain "<shouldnotclasses>"
-    And the "data-bs-theme" attribute of ".navbar" "css_element" should <databstheme>
 
     # We only test 1 out of 4 color types as we have tested the rest already in the previous scenario.
     Examples:
-      | globalsetting | setting | classes | databstheme | shouldnotclasses |
-      | dark          | light   | bg-body | not be set  | bg-dark          |
+      | globalsetting | setting | classes | shouldnotclasses    |
+      | dark          | light   | bg-body | navbar-dark bg-dark |
 
   Scenario Outline: Setting: Navbar color - Do not set the navbar color (with a global setting being served properly)
     Given the following config values are set as admin:
@@ -609,18 +607,21 @@ Feature: Configuring the theme_boost_union plugin on the "Flavours" page, applyi
     When I log in as "admin"
     And I am on "Course 1" course homepage
     Then the "class" attribute of ".navbar" "css_element" should contain "<classes>"
-    And the "data-bs-theme" attribute of ".navbar" "css_element" should <databstheme>
 
     # We only test 1 out of 4 color types as we have tested the rest already in the previous scenario.
     Examples:
-      | setting | classes | databstheme    |
-      | dark    | bg-dark | contain "dark" |
+      | setting | classes             |
+      | dark    | navbar-dark bg-dark |
 
   @javascript
-  Scenario: Setting: Navbar tint - Set the navbar tint color in a flavour (with no global tint having been set before)
+  Scenario Outline: Setting: Navbar tint - Set the navbar tint color in a flavour (with no global tint having been set before)
     Given the following config values are set as admin:
-      | config      | value       | plugin            |
-      | navbarcolor | coloreddark | theme_boost_union |
+      | config            | value       | plugin            |
+      | navbarcolor       | coloreddark | theme_boost_union |
+      | enablecolourmodes | 1           | theme_boost       |
+    And the following "user preferences" exist:
+      | user  | preference             | value        |
+      | admin | theme_boost_colourmode | <colourmode> |
     And the following "theme_boost_union > flavours" exist:
       | title                | applytocategories_ids | look_navbartint |
       | My shiny new flavour | CAT1                  | #FF0000         |
@@ -629,7 +630,13 @@ Feature: Configuring the theme_boost_union plugin on the "Flavours" page, applyi
     And I am on "Course 1" course homepage
     # Reloading the page is necessary to ensure that the navbar color is applied, as sometimes it might not appear on the first load due to caching.
     And I reload the page
-    Then DOM element ".navbar" should have computed style "background-color" "rgb(255, 0, 0)"
+    Then DOM element ".navbar" should have computed style "background-color" "<expectedcolor>"
+
+    # In the dark color mode, the navbar tint is not applied as the navbar is always dark there.
+    Examples:
+      | colourmode | expectedcolor   |
+      | light      | rgb(255, 0, 0)  |
+      | dark       | rgb(29, 33, 37) |
 
   @javascript
   Scenario: Setting: Navbar tint - Set the navbar tint color (with the global setting being overridden)
@@ -760,6 +767,11 @@ Feature: Configuring the theme_boost_union plugin on the "Flavours" page, applyi
     Then I should see "My global popover start" in the ".theme_boost_union_footer_popovercontentstart" "css_element"
     And I should see "My global popover end" in the ".theme_boost_union_footer_popovercontentend" "css_element"
 
+  # Please note: In theme designer mode, Moodle core sends the stylesheets with an Expires header of
+  # THEME_DESIGNER_CACHE_LIFETIME (10 seconds by default) and without a revision in the stylesheet URL. If this
+  # scenario runs faster than that, the browser serves the old stylesheet from its cache and the last step fails.
+  # Github actions therefore sets THEME_DESIGNER_CACHE_LIFETIME to 0 in config.php via the extra-config input
+  # of the moodle-plugin-ci workflow, see https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/issues/1415.
   @javascript
   Scenario Outline: Flavours: Flavour SCSS should be applied immediately in normal operation as well as if theme designer mode is on (with styles_debug.php).
     Given the following config values are set as admin:
@@ -769,6 +781,13 @@ Feature: Configuring the theme_boost_union plugin on the "Flavours" page, applyi
     And the following "theme_boost_union > flavours" exist:
       | title        | applytocategories_ids | look_rawscss                         |
       | Test Flavour | CAT1                  | .path-course-view #page-header h1 { display: none; } |
+    # Please note: The admin user gets the plain textarea editor here to avoid loading TinyMCE on the flavour edit form.
+    # In theme designer mode, each TinyMCE instance fetches the editor CSS from styles_debug.php which compiles
+    # the editor SCSS on every request. Since Moodle 5.3 (MDL-68037), this compilation is very slow and makes the
+    # TinyMCE autosave AJAX calls run into the pending JS timeout of Behat on Github actions.
+    And the following "user preferences" exist:
+      | user  | preference | value    |
+      | admin | htmleditor | textarea |
     When I log in as "admin"
     And I am on "Course 1" course homepage
     And I should not see "Course 1" in the "#page-header .page-header-headings" "css_element"

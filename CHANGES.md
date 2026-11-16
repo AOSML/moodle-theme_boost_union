@@ -4,8 +4,101 @@ moodle-theme_boost_union
 Changes
 -------
 
-### Unreleased
+### v5.3-r2
 
+* 2026-11-13 - Upstream change: Adopt changes from MDL-90110 to cache the editor content CSS in MUC when it is served by the flavours stylesheet script.\
+               Please note: This change raises the required Moodle core version to 5.3.1
+* 2026-11-12 - Bugfix: Declare and export the user preferences which are stored by the theme (dismissed info banners and the flags to purge the flavours and smart menus caches) in the privacy provider, as the privacy provider was declared as null provider and these preferences were neither listed in the privacy registry nor contained in user data exports, resolves #1475
+* 2026-11-07 - Improvement: Remove the flag to purge the smart menus cache instead of resetting it to an empty value and only if it is set, as a preference row was left behind for every user who had ever seen a smart menu otherwise; Existing reset flags are removed during the upgrade, relates to #1472
+* 2026-11-07 - Bugfix: Reset the flag to purge the flavours cache after the flavours cache has been purged, as the flag which is set when a user is added to or removed from a cohort which is used by a flavour was never reset and the flavours cache was purged on every page load for this user afterwards, existing flags are removed during the upgrade, resolves #1472
+
+### v5.3-r1
+
+* 2026-10-26 - Status of the Boost Union 5.3 release:
+               Please note: The Boost Union 5.3 release is generally working and usable in a way that we did not want to hold the release back any longer. We are still working on improvements and tests on 5.3 and will publish new releases as improvements and fixed are realized. Against this background, test the 5.3 release on your particular instance as usual and if you encounter any issues with Boost Union on 5.3, please report them as usual on https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/issues.
+               Please also be aware that we decided to remove the code for the card menu layout and bottom bar location from Boost Union smart menus for now. If you are using one of those features, please see https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/issues/1464 for details.
+* 2026-10-26 - Upgrade - further work on the smart menu React implementation: Keep smart menus which are configured to be kept outside of the "More" menu outside only as long as possible and collapse them into the "More" menu as a last resort (like Boost Union did on Moodle 5.2 and before), as the "More" menu wrapped into a second line of the main navigation or the menu bar if the space did not suffice even after all other menus had collapsed.
+* 2026-10-26 - Improvement: Remove the experimental hint from the smart menus settings page, as the smart menus are not considered experimental anymore, resolves #355.
+* 2026-10-26 - Upgrade - further work on the smart menu React implementation: Allow long smart menu item titles in the user menu to wrap, as they ran below the caret of the submenu links or were cut off otherwise, and keep a long submenu title next to the arrow of the submenu header when it wraps.
+* 2026-10-26 - Upgrade - further work on the smart menu React implementation: Keep the user menu open when the menu help icon of a smart menu in the user menu is clicked, as the user menu closed on the click and the help popover could not be read otherwise.
+* 2026-10-26 - Upgrade - further work on the smart menu React implementation: Mark the active item on the third level of a smart menu (e.g. the current course within a dynamic courses item in submenu mode) as active, as its active flag got lost while flagging the active nodes, and do not mark the toggle of a smart menu which has been collapsed into the "More" menu as active (with a tick) anymore, as the tick is shown on the active item within the smart menu itself now, and indent the items of a dropdown menu or a smart menu level only if one of its own items is active and carries the tick.
+* 2026-10-26 - Upgrade: Keep the focus outline of the menu help icon of the smart menus in the user menu fully visible, as the scrollable items container of the user menu submenus cut off its top otherwise.
+* 2026-10-26 - Upgrade: Align the outside-left and outside-right block regions on large screens with the top of the main content area, which Moodle 5.3 moves down to line it up with the anchored drawers, and align the toggles of the closed drawers with this top as well, as the block regions started above the main content area and the toggles below it otherwise.
+* 2026-10-23 - Upgrade: Hide the collapse toggle of the subsections without keeping its space if a section is shown without collapsing, as Moodle 5.3 presents a subsection as a card of its own and the subsection title would be indented without reason otherwise, reduce the space below the section and subsection titles in this case and align the section summary with the title again, relates to #1454
+* 2026-10-22 - Upgrade: Apply the configured link color in the dark color mode which Moodle 5.3 introduced as well, as Moodle core derives the link colors of the dark color mode from the brand color instead of the link color.
+* 2026-10-22 - Upgrade: Show the 'light brand color' canvas background of the course header with a dark brand color tint in the dark color mode which Moodle 5.3 introduced, as Moodle core's .bg-primary-light class stays light in the dark color mode and the canvas became a glaring light area.
+* 2026-10-22 - Upgrade: Show the 'light grey' canvas background of the course header slightly darker than the page background, as Moodle 5.3 uses the same color for its .bg-light utility and the page background and the canvas was not visible anymore.
+* 2026-10-20 - Upgrade: Show the course index drawer and the block drawer flush with the window edges and with full height (like in Moodle 5.2 and before) on pages where the outside-left, outside-right, outside-top or header block region is shown, as the drawers which Moodle 5.3 anchors next to the main content area would cover these block regions otherwise.
+* 2026-10-20 - Upgrade - further work on the smart menu React implementation: Fix the overlapping tick of the active item in the submenus of the user menu (like the language menu) on pages without smart menus by keeping Moodle core's fixed indentation in the user_action_menu_submenu_items.mustache override and removing it with SCSS only within the smart menus if no item is active.
+* 2026-10-16 - Upgrade: Support the dark color mode which Moodle 5.3 introduced in Boost core in the theme's SCSS, the SCSS which is composed in the theme's code and the built-in SCSS snippets: Hardcoded light colors were replaced with the custom properties which Boost core remaps in the dark color mode or got a dark color mode alternative.
+* 2026-10-16 - Upgrade: Add a dark mode support notification to settings
+* 2026-10-15 - Upgrade - further work on the smart menu React implementation: Fix the tooltips of the smart menu dropdown toggles in the React main navigation and menu bar: As Bootstrap allows only one component instance per element, the tooltip instance on a toggle prevented Bootstrap from closing its dropdown again when another dropdown was opened or when the user clicked outside. The tooltip is now attached to the label within the toggle.
+* 2026-10-15 - Upgrade - further work on the smart menu React implementation: Fix the vertical alignment of the dropdown caret of smart menu items with children which are nested within the "More" menu
+* 2026-10-15 - Upgrade - further work on the smart menu React implementation: Indent the smart menu descriptions within the "More" menu together with the menu items as soon as any item of the "More" menu is active
+* 2026-10-16 - Upgrade - further work on the smart menu React implementation: Widen the "More" menu by its horizontal overflow whenever its content changes, as Firefox does not account for the vertical scrollbar of a "More" menu which grows taller than the viewport when smart menus are expanded within it and shows a horizontal scrollbar otherwise
+* 2026-10-14 - Upgrade: Support the dark color mode which Moodle 5.3 introduced in Boost core in the navbar: The navbar and the smart menu menu bar are always shown dark in the dark color mode, regardless of the configured navbar color and navbar tint, and the dropdowns in the navbar as well as the smart menu headings and descriptions follow the color mode of the page.
+* 2026-10-13 - Upgrade: Adapt Behat scenarios to the new React main navigation
+* 2026-10-13 - Upgrade: Adopt changes to user_action_menu_items.mustache and add an override of user_action_menu_item_link.mustache
+* 2026-10-05 - Upgrade: Adopt changes to loginform.mustache
+* 2026-10-13 - Upgrade: Remove the activity & section navigation elements setting (setting, strings, layout code, renderer override, documentation and tests) as Moodle 5.3 ships a course linear navigation in its core course formats which covers the same use case. The legacy activity navigation is now shown or hidden as Moodle core decides. Existing values of the removed setting are unset during the upgrade.
+* 2026-10-08 - Upgrade: Migrate the smart menus in the primary navigation and the menu bar to React (adopting MDL-89294 from Moodle core), replacing the legacy core/moremenu based rendering, the theme_boost_union/smartmenu and theme_boost_union/submenu AMD modules and the intermediate Behat fix. Piggyback on this change, the layout of the smart menus has been aligned to the new Moodle core meny style and the Boost Union specific aspects have been revised.
+* 2026-10-08 - Upgrade: Remove the card presentation of smart menus for now (rendering, settings, strings and tests), existing smart menus which were configured as cards are rendered as list menus until the card presentation is re-implemented for the React-based smart menus.
+* 2026-10-08 - Upgrade: Remove the bottom bar for now (rendering, location setting, strings and tests), existing smart menus which were configured for the bottom bar location are not rendered there anymore until the bottom bar is re-implemented for the React-based smart menus.
+* 2026-10-08 - Upgrade: Intermediate fix to use the React-based primary navigation from Moodle core as long as no smart menu is configured and fall back to the core/moremenu-based primary navigation as soon as a smart menu is configured
+* 2026-10-08 - Upgrade: Adopt the 'Collapse all / Expand all' control which Moodle core moved out of section 0 to above the section list in classes/util/section.php
+* 2026-10-08 - Upgrade: Adopt the import sequence of the Boost Core default preset in the preset.scss test fixture
+* 2026-10-08 - Upgrade: Adopt the new FontAwesome bundle location in locallib.php
+* 2026-10-05 - Upgrade: Adopt changes in locallib.php
+* 2026-10-05 - Upgrade: Adopt changes to slider.mustache
+* 2026-10-05 - Upgrade: Adopt changes in flavour_edit_form.php and colorpicker_rule.php
+* 2026-10-05 - Upgrade: Adopt changes to submenu.js
+* 2026-10-05 - Upgrade: Adopt changes to \core_course\management\renderer.php
+* 2026-10-05 - Upgrade: Adopt changes to core_renderer.php
+* 2026-10-05 - Upgrade: Adopt changes to user_menu.mustache
+* 2026-10-05 - Upgrade: Adopt changes to columns2.mustache
+* 2026-10-05 - Upgrade: Adopt changes to drawers.mustache
+* 2026-10-05 - Upgrade: Adopt changes to footer.mustache
+* 2026-10-05 - Upgrade: Adopt changes to navbar.mustache
+* 2026-10-05 - Prepare compatibility for Moodle 5.3.
+
+### v5.2-r14
+
+* 2026-10-22 - Bugfix: Let a subsection follow the section appearance setting of the section in which it is placed, as the subsections in section 0 lost their collapse toggle if the sections ≥ 1 were shown without collapsing and the subsections were not collapsed by default if their section was configured to be collapsed by default, resolves #1454
+* 2026-10-22 - Bugfix: Show the login link button as light button on the colored navbar variants as it had the same background color as the navbar and was not recognisable as a button, resolves #1452
+* 2026-10-21 - Bugfix: Align the activity type icons in the course index vertically with the section titles if the completion info is shown at the end of the line or as icon color, as a leftover rule moved the section titles to the right which only fitted the former missing indentation of the activities, relates to #1449
+* 2026-10-21 - Bugfix: Keep the indentation of the activities and subsections in the course index if the activity type icons are shown in the course index as the hierarchy of sections, subsections and activities was not visible anymore, resolves #1449
+
+### v5.2-r13
+
+* 2026-10-15 - Tests: Use the plain textarea editor in the Behat scenario which verifies that flavour SCSS is applied immediately in theme designer mode, as the TinyMCE editor CSS compilation became very slow in Moodle 5.3 (MDL-68037) and made the scenario run into the pending JS timeout of Behat on Github actions, resolves #1443
+* 2026-10-15 - Bugfix: Show the expanded search form in the navbar in the configured navbar tint instead of the primary brand color, resolves #1441
+* 2026-10-14 - Tests: Remove the cache purging workaround from the info banner Behat tests as the underlying problem was a Moodle core bug (MDL-83757) which has been fixed in the meantime and all Boost Union stable releases require those Moodle core versions, resolves #734
+* 2026-10-14 - Improvement: Validate that the end time of a time-based info banner is not before its start time when the settings are saved, resolves #97
+* 2026-10-13 - Improvement: Rework the admin_setting_configdatetime class which is used for the info banner start and end time settings to use the mform date_time_selector widget from Moodle core instead of a custom implementation, resolves #97
+* 2026-10-13 - Bugfix: The header block region is not aligned properly if outside-left and outside-right have unequal widths, resolves #252
+* 2026-10-13 - Bugfix: Let clicks on the slider's caption box pass through to the linked background image as the caption box's paddings created an unclickable area on the image, resolves #1196
+* 2026-10-11 - Improvement: Remove the precompiled CSS callback which just returned Boost Core's fallback CSS file another time as Moodle core already adds this file from Boost's own callback in case of a SCSS compilation error, resolves #89
+* 2026-10-10 - Bugfix: Validate the block region width settings for the 'Outside (left)' and 'Outside (right)' regions as invalid values would break the SCSS compilation, resolves #1433
+* 2026-10-10 - Bugfix: Anchor the regular expressions which validate the width settings properly as they accepted values like '10%)' which would break the SCSS compilation, resolves #1433
+
+### v5.2-r12
+
+* 2026-10-08 - Bugfix: Fix the database default of the smart menu type field which was set to the card type instead of the list type, resolves #1431
+* 2026-10-08 - Tests: Set the theme preset directly instead of saving it in the settings form in the preset inheritance Behat test as the form validation might race with the following steps
+* 2026-10-07 - Bugfix: Correctly escape special characters in static page titles, resolves #1382
+* 2026-10-07 - Improvement: Add "Course URL" and "Page URL" as placeholder for smart menu items, resolves #1346
+* 2026-10-07 - Improvement: Allow placeholders in mailto links within the smart menu items, resolves #1346
+* 2026-10-07 - Improvement: Add a setting to hide the footnote when a page is printed, resolves #1381
+* 2026-10-07 - Improvement: Report the Boost Union recommendations check only as info instead of warning on the Checks API status page if Boost Union is not the active theme, resolves #1387
+* 2026-10-07 - Improvement: Add a 'Hide' option to the activity & section navigation elements setting to hide the activity navigation also in course formats which do not use the course index, and clarify the setting description, resolves #1403
+* 2026-10-06 - Tests: Stabilize the footer telemetry trace ID test which failed sporadically on Github actions, resolves #1423
+
+### v5.2-r11
+
+* 2026-10-05 - Tests: Fix stylelint issue for theme/boost_union/tests/fixtures/extscss-invalid.scss, resolves #695
+* 2026-10-05 - Bugfix: The login background images were fetched in an undefined order which could result in a mismatch between the displayed image and its image text and in a sporadically failing Behat test, resolves #950
+* 2026-10-05 - Tests: Stabilize the smart menu dynamic courses test which failed sporadically on Github actions, resolves #949
+* 2026-10-04 - Tests: Stabilize the flavour SCSS test in theme designer mode which failed sporadically on Github actions, resolves #1415
 * 2026-10-04 - Bugfix: ESLint error in drawers.mustache: Trailing spaces not allowed, resolves #1413
 * 2026-10-03 - Tests: Fix failing core unit test  (setting_by_name_not_found), resolves #1401
 * 2026-10-02 - Improvement: Allow custom additions at the beginning and at the end of the footer popover (globally and within flavours), resolves #531

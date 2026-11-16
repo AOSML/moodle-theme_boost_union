@@ -403,6 +403,40 @@ Feature: Configuring the theme_boost_union plugin for the "Blocks" tab on the "F
       | outside-right | blockregionoutsiderightwidth | 300px        |
       | outside-right | blockregionoutsiderightwidth | 400px        |
 
+  @javascript
+  Scenario Outline: Setting: Block region width for 'Outside (left/right)' regions - Valid width values are accepted by the settings form (tested on the 'Outside (left)' field as representative for all fields which use the regex)
+    When I log in as "admin"
+    And I navigate to "Appearance > Boost Union > Feel" in site administration
+    And I click on "Blocks" "link" in the "#adminsettings .nav-tabs" "css_element"
+    And I set the field "Block region width for 'Outside (left)' region" to "<settingvalue>"
+    And I click on "Save changes" "button"
+    Then I should see "Changes saved"
+    And I should not see "Some settings were not changed due to an error."
+    And the field "Block region width for 'Outside (left)' region" matches value "<settingvalue>"
+
+    Examples:
+      | settingvalue |
+      | 400px        |
+      | 10%          |
+      | 10vw         |
+
+  @javascript
+  Scenario Outline: Setting: Block region width for 'Outside (left/right)' regions - Invalid width values which would break the SCSS compilation are rejected by the settings form (tested on the 'Outside (left)' field as representative for all fields which use the regex)
+    When I log in as "admin"
+    And I navigate to "Appearance > Boost Union > Feel" in site administration
+    And I click on "Blocks" "link" in the "#adminsettings .nav-tabs" "css_element"
+    And I set the field "Block region width for 'Outside (left)' region" to "<settingvalue>"
+    And I click on "Save changes" "button"
+    Then I should see "Some settings were not changed due to an error."
+    And I should see "This value is not valid"
+    And I should not see "Changes saved"
+
+    Examples:
+      | settingvalue |
+      | 300px)       |
+      | 10%)         |
+      | abc          |
+
   Scenario Outline: Setting: Block region width for 'Outside (top/bottom)' regions
     Given the following config values are set as admin:
       | config                | value          | plugin            |
@@ -607,6 +641,131 @@ Feature: Configuring the theme_boost_union plugin for the "Blocks" tab on the "F
       | setting | shouldcontain      | beforeafter |
       | 1       | should contain     | before      |
       | 0       | should not contain | after       |
+
+  @javascript
+  Scenario Outline: Setting: Align header region with main content region width and position
+    Given the following config values are set as admin:
+      | config                       | value                          | plugin            |
+      | blockregionsforcourse        | <regions>                      | theme_boost_union |
+      | blockregionoutsideleftwidth  | <blockregionoutsideleftwidth>  | theme_boost_union |
+      | blockregionoutsiderightwidth | <blockregionoutsiderightwidth> | theme_boost_union |
+    And the theme cache is purged and the theme is reloaded
+    When I am on the "Course 1" "Course" page logged in as "admin"
+    And I turn editing mode on
+    And I change window size to "large"
+    Then DOM element ".theme-block-region-outside-left-spacer" should have computed style "width" "<blockregionoutsideleftwidth>"
+    And DOM element ".theme-block-region-outside-right-spacer" should have computed style "width" "<blockregionoutsiderightwidth>"
+    And DOM elements "#theme-block-region-header" and "#topofscroll" should have the same "left" position value
+    And DOM elements "#theme-block-region-header" and "#topofscroll" should have the same "right" position value
+
+    Examples:
+      | regions                           | blockregionoutsideleftwidth | blockregionoutsiderightwidth |
+      | outside-left,outside-right,header | 300px                       | 300px                        |
+      | outside-left,outside-right,header | 200px                       | 400px                        |
+      | outside-left,outside-right,header | 400px                       | 200px                        |
+
+  Scenario Outline: Setting: Check existence of the outside region spacers next to the header region
+    Given the following config values are set as admin:
+      | config                | value     | plugin            |
+      | blockregionsforcourse | <regions> | theme_boost_union |
+    And the theme cache is purged and the theme is reloaded
+    When I am on the "Course 1" "Course" page logged in as "admin"
+    And I turn editing mode on
+    Then ".theme-block-region-header-wrapper .theme-block-region-outside-left-spacer" "css_element" <outsideleftregionshouldornot> exist
+    And ".theme-block-region-header-wrapper .theme-block-region-outside-right-spacer" "css_element" <outsiderightregionshouldornot> exist
+
+    Examples:
+      | regions                           | outsideleftregionshouldornot | outsiderightregionshouldornot |
+      | outside-left,outside-right,header | should                       | should                        |
+      | outside-left,header               | should                       | should not                    |
+      | outside-right,header              | should not                   | should                        |
+      | outside-left,outside-right        | should not                   | should not                    |
+
+  @javascript
+  Scenario Outline: Setting: Outside block regions - Show the opened drawers at the window edges without covering the outside block regions (on large screens)
+    Given the following config values are set as admin:
+      | config                | value     | plugin            |
+      | blockregionsforcourse | <regions> | theme_boost_union |
+    And the following "blocks" exist:
+      | blockname         | contextlevel | reference | pagetypepattern | defaultregion |
+      | calendar_month    | Course       | C1        | course-view-*   | side-pre      |
+      | online_users      | Course       | C1        | course-view-*   | <region1>     |
+      | calendar_upcoming | Course       | C1        | course-view-*   | <region2>     |
+    And the following "user preferences" exist:
+      | user  | preference        | value |
+      | admin | drawer-open-index | 1     |
+      | admin | drawer-open-block | 1     |
+    And the theme cache is purged and the theme is reloaded
+    And I change viewport size to "1400x900"
+    When I am on the "Course 1" "Course" page logged in as "admin"
+    Then DOM element "#theme_boost-drawers-courseindex" should be placed at the "left" edge of the viewport
+    And DOM element "#theme_boost-drawers-blocks" should be placed at the "right" edge of the viewport
+    And DOM element "#theme_boost-drawers-courseindex" should not overlap with any of the DOM elements "#theme-block-region-outside-top, #theme-block-region-outside-left, #theme-block-region-outside-right, #theme-block-region-header"
+    And DOM element "#theme_boost-drawers-blocks" should not overlap with any of the DOM elements "#theme-block-region-outside-top, #theme-block-region-outside-left, #theme-block-region-outside-right, #theme-block-region-header"
+
+    Examples:
+      | regions                    | region1      | region2       |
+      | outside-left,outside-right | outside-left | outside-right |
+      | outside-top,outside-left   | outside-top  | outside-left  |
+      | outside-top,outside-right  | outside-top  | outside-right |
+      | header,outside-left        | header       | outside-left  |
+
+  @javascript
+  Scenario Outline: Setting: Outside block regions - Show the toggles of the closed drawers without covering the outside block regions and aligned with their top (on large and medium screens)
+    Given the following config values are set as admin:
+      | config                | value     | plugin            |
+      | blockregionsforcourse | <regions> | theme_boost_union |
+    And the following "blocks" exist:
+      | blockname         | contextlevel | reference | pagetypepattern | defaultregion |
+      | calendar_month    | Course       | C1        | course-view-*   | side-pre      |
+      | online_users      | Course       | C1        | course-view-*   | <region1>     |
+      | calendar_upcoming | Course       | C1        | course-view-*   | <region2>     |
+    And the following "user preferences" exist:
+      | user  | preference        | value |
+      | admin | drawer-open-index | 0     |
+      | admin | drawer-open-block | 0     |
+    And the theme cache is purged and the theme is reloaded
+    And I change viewport size to "<viewport>"
+    When I am on the "Course 1" "Course" page logged in as "admin"
+    Then DOM element ".drawer-toggles .drawer-left-toggle .btn" should not overlap with any of the DOM elements "#theme-block-region-outside-top, #theme-block-region-outside-left, #theme-block-region-outside-right, #theme-block-region-header"
+    And DOM element ".drawer-toggles .drawer-right-toggle .btn" should not overlap with any of the DOM elements "#theme-block-region-outside-top, #theme-block-region-outside-left, #theme-block-region-outside-right, #theme-block-region-header"
+    And DOM elements ".drawer-toggles .drawer-left-toggle .btn" and "#theme-block-region-<region1>" should have the same "top" position value
+    And DOM elements ".drawer-toggles .drawer-right-toggle .btn" and "#theme-block-region-<region1>" should have the same "top" position value
+
+    Examples:
+      | viewport | regions                    | region1      | region2       |
+      | 1400x900 | outside-left,outside-right | outside-left | outside-right |
+      | 1400x900 | outside-top,outside-left   | outside-top  | outside-left  |
+      | 900x900  | outside-left,outside-right | outside-left | outside-right |
+      | 900x900  | outside-top,outside-left   | outside-top  | outside-left  |
+
+  @javascript
+  Scenario Outline: Setting: Outside block regions - Keep the drawers anchored next to the main content area as in Moodle core if no outside block regions are shown (on large screens)
+    Given the following config values are set as admin:
+      | config                | value     | plugin            |
+      | blockregionsforcourse | <regions> | theme_boost_union |
+    And the following "blocks" exist:
+      | blockname      | contextlevel | reference | pagetypepattern | defaultregion |
+      | calendar_month | Course       | C1        | course-view-*   | side-pre      |
+      | online_users   | Course       | C1        | course-view-*   | <region1>     |
+    And the following "user preferences" exist:
+      | user  | preference        | value |
+      | admin | drawer-open-index | 1     |
+      | admin | drawer-open-block | 1     |
+    And the theme cache is purged and the theme is reloaded
+    And I change viewport size to "1600x900"
+    When I am on the "Course 1" "Course" page logged in as "admin"
+    Then DOM element "#theme_boost-drawers-courseindex" should not be placed at the "left" edge of the viewport
+    And DOM element "#theme_boost-drawers-blocks" should not be placed at the "right" edge of the viewport
+    And DOM elements "#theme_boost-drawers-courseindex" and "#topofscroll" should have a horizontal gap of "28" pixels
+    And DOM elements "#topofscroll" and "#theme_boost-drawers-blocks" should have a horizontal gap of "28" pixels
+    And DOM elements "#theme_boost-drawers-courseindex" and "#topofscroll" should have the same "top" position value
+    And DOM elements "#theme_boost-drawers-blocks" and "#topofscroll" should have the same "top" position value
+
+    Examples:
+      | regions        | region1        |
+      | outside-bottom | outside-bottom |
+      | content-upper  | content-upper  |
 
   Scenario Outline: Setting: Harden block regions - Block edit controls are shown in allowed regions and hidden in restricted region regardless of hardening setting (Regression test).
     Given the following config values are set as admin:

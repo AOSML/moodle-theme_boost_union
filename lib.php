@@ -287,6 +287,26 @@ function theme_boost_union_is_active_theme(): bool {
 }
 
 /**
+ * Helper function to check if Boost Union or a child theme of Boost Union is the site theme.
+ * In contrast to theme_boost_union_is_active_theme(), this does not rely on $PAGE, as it is also needed on the CLI
+ * (e.g. when the Checks API is used by monitoring systems) where $PAGE is not set up and child themes would not be recognized.
+ *
+ * @return bool
+ */
+function theme_boost_union_is_site_theme(): bool {
+    global $CFG;
+
+    // If Boost Union is the site theme, we are done.
+    if ($CFG->theme === 'boost_union') {
+        return true;
+    }
+
+    // Otherwise, check if the site theme is a child theme of Boost Union.
+    $themeconfig = \core\output\theme_config::load($CFG->theme);
+    return in_array('boost_union', $themeconfig->parents);
+}
+
+/**
  * Helper function to check if a child theme of Boost Union (and _not_ Boost Union itself) is active.
  * This is needed at multiple locations to improve child theme support in Boost Union already.
  *
@@ -974,17 +994,6 @@ function theme_boost_union_get_extra_scss($theme) {
 }
 
 /**
- * Get compiled css.
- *
- * @return string compiled css
- */
-function theme_boost_union_get_precompiled_css() {
-    global $CFG;
-    // Get the fallback CSS file from Boost Core as long as Boost Union does not use a fallback file of its own.
-    return file_get_contents($CFG->dirroot . '/theme/boost/style/moodle.css');
-}
-
-/**
  * Serves any files associated with the theme settings.
  *
  * @param stdClass $course
@@ -1199,8 +1208,8 @@ function theme_boost_union_pluginfile($course, $cm, $context, $filearea, $args, 
         file_safe_save_content($filedata, $candidate);
         send_file($candidate, $filename, $lifetime, 0, false, false, '', false, $serveoptions);
 
-        // Serve the files from the smart menu card images.
-    } else if (in_array($filearea, ['smartmenus_itemimage', 'snippets']) && $context->contextlevel === CONTEXT_SYSTEM) {
+        // Serve the files from the snippets.
+    } else if ($filearea === 'snippets' && $context->contextlevel === CONTEXT_SYSTEM) {
         // Get file storage.
         $fs = get_file_storage();
 

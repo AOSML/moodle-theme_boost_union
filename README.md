@@ -9,7 +9,7 @@ Theme Boost Union is an enhanced child theme of Boost which is intended, on the 
 Requirements
 ------------
 
-This theme requires Moodle 5.2+
+This theme requires Moodle 5.3+
 
 
 Motivation for this theme
@@ -376,10 +376,6 @@ With this setting a back to top button will appear in the bottom right corner of
 
 With this setting, upon toggling edit mode on and off, the scroll position at where the user was when performing the toggle is preserved.
 
-###### Activity navigation elements
-
-With this setting the elements to jump to the previous and next activity/resource as well as the pull down menu to jump to a distinct activity/resource become displayed. UI elements like this existed already on Boost in Moodle Core until Moodle 3.11, but were removed in 4.0. With Boost Union, you can bring them back.
-
 ###### Show navigation on policy overview page
 
 By default, the policy overview page (provided by tool_policy) does not show a navigation menu or footer. With this setting, you can show the primary navigation and footer on that page.
@@ -409,6 +405,7 @@ Please note:
 * By default, all additional block regions are disabled. Please enable the particular block regions on the particular page layouts according to your needs. Try to be as focused as possible – too many block regions could overwhelm end users.
 * As soon as an additional block region is enabled, it is visible for all authenticated users as well as guest users and editable by teachers and managers (depending on the fact if the particular user is allowed to edit the particular Moodle page, of course). But there are also theme/boost_union:viewregion* and theme/boost_union:editregion* capabilities which allow you to fine-tune the usage of each block region according to your needs.
 * The Outside (left), Outside (right), Content (upper), Content (lower) and Header block regions are not available for all page layouts.
+* On larger screens, Moodle core shows the course index drawer and the block drawer as floating panels next to the main content area. As soon as the Outside (left), Outside (right), Outside (top) or Header block region is shown on a page, Boost Union shows these drawers flush with the window edges and with full height instead (like Moodle 5.2 and before did) to prevent that the drawers cover these block regions.
 
 ##### Outside regions
 
@@ -479,6 +476,14 @@ In this tab there are the following settings:
 ###### Footnote
 
 Whatever you add to this textarea will be displayed at the end of a page, in the footer. Refer to the setting description on the settings page for further instructions.
+
+###### Page layouts for footnote
+
+With this setting, you can control on which page layouts the footnote is shown. If no layout is selected, the footnote will not be shown on any layout.
+
+###### Hide footnote when printing
+
+With this setting, you can hide the footnote when a page is printed. The footnote will still be shown on screen as usual.
 
 ##### Footer
 
@@ -624,7 +629,7 @@ Boost Union's CSS snippets offer a possibility to add small (or slightly larger)
 
 ### Settings page "Smart menus"
 
-Smart menus allow site administrators to create customizable menus that can be placed in different locations on the site, such as the site main menu, bottom mobile menu, and user menu. The menus can be configured to display different types of content, including links to other pages or resources, category links, or user profile links. On this page, you can create and manage smart menus.
+Smart menus allow site administrators to create customizable menus that can be placed in different locations on the site, such as the site main menu, the menu bar and the user menu. The menus can be configured to display different types of content, including links to other pages or resources, category links, or user profile links. On this page, you can create and manage smart menus.
 
 ### Settings page "Recommendations"
 
@@ -770,8 +775,6 @@ As you have read in the introduction, the main design principle of Boost Union i
   As soon as you click the footer button (questionmark icon) in the bottom right corner of the screen, a popover with several links appears. However, the content of this link list is far from being well-structured and looks more like a garage sale. When implementing the settings to individually suppress each of these popover links, we had to make some code re-arrangements which result in the fact that the popover links are slightly more well-structured even if you do not enable any setting in Boost Union.
 * Clickable header and transition time in the user's menu third level:
   Due to the way how the smart menu was integrated into the user menu, as soon as at least one smart menu exists on the page, the header of the language menu in the user menu is now fully clickable - compared to Boost core where only the 'back' arrow in the language menu is clickable - and the transition time to open the language menu is shortened. This should be a neglectible difference to Boost core.
-* Activity and section navigation styling:
-  Boost Union restyles the core activity navigation (previous / next activity links) and section navigation (previous / next section links) to look like Bootstrap small secondary buttons and, along the way, fixes the position of the "next section" arrow which Moodle core renders in front of the section name instead of behind it. This restyling is always active as soon as the "Activity & section navigation elements" setting is enabled and there is intentionally no setting to switch back to the original Moodle core look. This is simply because the original look is rather oldfashioned and Moodle core does not really show these navigation elements anywhere else in its default course formats anymore.
 
 
 Companion plugin local_navbarplus
@@ -812,8 +815,6 @@ This theme ships with some additions for companion plugins:
 
 * block_dash / local_dash:
   * Style improvements for Dash dashboards in combination with Boost Union block regions
-* local_learningtools:
-  * Style improvements for the learning tools button in combination with the Boost Union bottom navigation
 * local_och5p / local_och5pcore:
   * Renderer additions to add necessary additional CSS and JS files.
 
@@ -922,7 +923,7 @@ Please report bugs and problems on Github:
 https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/issues
 
 Support thread:
-https://s.gwdg.de/bxqZti
+https://s.gwdg.de/7Wf2A7
 
 We kindly invite you to use this support thread in case of any questions you might have. We are a team of many (sometimes power) users of Boost Union and will try to answer or collectively according to our measures. If any other users know answers or are quicker, don't hesitate to answer. We will do our best to solve your problems, but please note that due to limited resources we can't always provide per-case support.
 
@@ -959,6 +960,15 @@ Translating this theme
 This Moodle plugin is shipped with an english language pack only. All translations into other languages must be managed through AMOS (https://lang.moodle.org) by what they will become part of Moodle's official language pack.
 
 As the plugin creator, we manage the translation into german for our own local needs on AMOS. Please contribute your translation into all other languages in AMOS where they will be reviewed by the official language pack maintainers for Moodle.
+
+
+Dark mode support
+-----------------
+
+This theme is primarily developed on Moodle Core's light mode.
+However, we do regular checks in dark mode as well and are constantly evolving the Boost Union UI with dark mode alternatives to make sure that the Boost Union user experience in dark mode is equal to the user experience in light mode.
+
+If spot any glitch in dark mode, please raise a ticket on Github with screenshots and steps to reproduce.
 
 
 Right-to-left support

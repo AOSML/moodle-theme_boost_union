@@ -50,12 +50,6 @@ require_once($CFG->dirroot . '/course/lib.php');
 // Require own locallib.php.
 require_once($CFG->dirroot . '/theme/boost_union/locallib.php');
 
-// Add activity navigation if the feature is enabled.
-$activitynavigation = get_config('theme_boost_union', 'activitynavigation');
-if ($activitynavigation == THEME_BOOST_UNION_SETTING_SELECT_YES) {
-    $PAGE->theme->usescourseindex = false;
-}
-
 // Add block button in editing mode.
 $addblockbutton = $OUTPUT->addblockbutton();
 
@@ -141,9 +135,6 @@ if (isset($primarymenu['includesmartmenu']) && $primarymenu['includesmartmenu'] 
     $extraclasses[] = 'theme-boost-union-smartmenu';
 }
 
-if (!empty($primarymenu['bottombar']) && !empty($primarymenu['bottombar']['drawer']) && !empty($primarymenu['includesmartmenu'])) {
-    $extraclasses[] = 'theme-boost-union-bottombar';
-}
 
 // Include the extra classes for the course index modification.
 require_once(__DIR__ . '/includes/courseindex.php');
@@ -180,6 +171,7 @@ $templatecontext = [
     'blockdraweropen' => $blockdraweropen,
     'courseindex' => $courseindex,
     'primarymoremenu' => $primarymenu['moremenu'],
+    'includesmartmenu' => !empty($primarymenu['includesmartmenu']),
     'secondarymoremenu' => $secondarynavigation ?: false,
     'mobileprimarynav' => $primarymenu['mobileprimarynav'],
     'usermenu' => $primarymenu['user'],

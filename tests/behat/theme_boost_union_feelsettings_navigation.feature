@@ -348,33 +348,3 @@ Feature: Configuring the theme_boost_union plugin for the "Navigation" tab on th
     And I wait "2" seconds
     And page top is not at the top of the viewport
     Then "#back-to-top" "css_element" should be visible
-
-  Scenario: Setting: Activity navigation - Enable "Activity navigation"
-    Given the following config values are set as admin:
-      | config             | value | plugin            |
-      | activitynavigation | yes   | theme_boost_union |
-    And the following "activities" exist:
-      | activity | name    | course | idnumber |
-      | forum    | Forum 1 | C1     | forum1   |
-      | forum    | Forum 2 | C1     | forum2   |
-      | forum    | Forum 3 | C1     | forum3   |
-    Given I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    When I follow "Forum 2"
-    Then I should see "Forum 1" in the "#prev-activity-link" "css_element"
-    And I should see "Forum 3" in the "#next-activity-link" "css_element"
-
-  Scenario: Setting: Activity navigation - Disable "Activity navigation" (countercheck)
-    Given the following config values are set as admin:
-      | config             | value | plugin            |
-      | activitynavigation | no    | theme_boost_union |
-    And the following "activities" exist:
-      | activity | name    | course | idnumber |
-      | forum    | Forum 1 | C1     | forum1   |
-      | forum    | Forum 2 | C1     | forum2   |
-      | forum    | Forum 3 | C1     | forum3   |
-    Given I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    When I follow "Forum 2"
-    Then "#prev-activity-link" "css_element" should not exist
-    And "#next-activity-link" "css_element" should not exist
